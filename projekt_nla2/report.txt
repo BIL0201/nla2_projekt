@@ -1,0 +1,100 @@
+Report
+
+Úvod
+
+QR rozklad je základním nástrojem numerické lineární algebry
+s využitím například při řešení soustav lineárních rovnic
+nebo metodě nejmenších čtverců.
+V praxi je důležitá nejen teoretická správnost algoritmu,
+ale také jeho numerická stabilita.
+
+Cílem této práce je porovnat klasický a modifikovaný Gram–Schmidtův proces
+na reálných maticích ze SuiteSparse Matrix Collection
+a experimentálně ověřit jejich numerické vlastnosti.
+
+
+
+Popis použitých metod
+
+QR rozklad
+
+QR rozklad matice A ∈ ℝ^{m×n} je rozklad tvaru A = QR,
+kde Q ∈ ℝ^{m×n} má ortonormální sloupce
+a R ∈ ℝ^{n×n} je horní trojúhelníková matice.
+
+
+Klasický Gram–Schmidtův proces (CGS)
+
+Klasický Gram–Schmidtův proces postupně ortogonalizuje sloupce matice A
+odečítáním projekcí na již vypočtené ortonormální vektory.
+Algoritmus je konceptuálně jednoduchý,
+ale je známý svou citlivostí na zaokrouhlovací chyby,
+zejména pro špatně podmíněné matice.
+
+
+Modifikovaný Gram–Schmidtův proces (MGS)
+
+Modifikovaný Gram–Schmidtův proces je numericky stabilnější varianta CGS.
+Ortogonalizace probíhá postupně a každá projekce je ihned odečtena od zbývajících vektorů,
+čímž se omezuje akumulace numerických chyb.
+
+
+
+Použitá implementace
+
+Matice jsou načteny ze souborů ve formátu Matrix Market pomocí knihovny SciPy.
+Pro samotný výpočet QR rozkladu jsou s pomocí knihovny NumPy implementovány vlastní funkce CGS a MGS.
+Numerická chyba QR rozkladu je hodnocena pomocí normy ‖A − QR‖.
+Kvalita ortogonality matice Q je hodnocena pomocí normy ‖QᵀQ − I‖.
+
+
+
+Použité matice
+
+Pro testování kódu byly využity čtyři reálné matice ze SuiteSparse Matrix Collection.
+Matice byly vybrány tak, aby byl CGS i MGS otestován na 
+různých číslech podmíněnosti u daných matic.
+Zde jsou čísla podmíněnosti pro konkrétní matice: 
+abb313 - 1.825805e+18 (dále matice A)
+bcspwr01 - 5.250010e+01 (dále matice B)
+ash219 - 3.024858e+00 (dále matice C)
+lp_stocfor: 7.266527e+03 (dále matice D)
+
+Čísla podmíněnosti jednotlivých matic se výrazně liší,
+od velmi dobře podmíněné matice C (κ ≈ 3)
+až po extrémně špatně podmíněnou matici A (κ ≈ 1.8 × 10¹⁸).
+
+
+
+Výsledky
+
+Ve všech testovaných případech dosahovala hodnota ‖A − QR‖
+velmi malých hodnot, řádově 10⁻¹³ až 10⁻¹⁵, a to i u špatně podmíněných matic.
+což odpovídá strojové přesnosti výpočtů v plovoucí desetinné aritmetice.
+
+Na základě toho lze konstatovat, že QR rozklad byl ve všech případech vypočten korektně.
+
+Ve výsledcích se objevil vztah mezi číslem podmíněnosti testovaných matic
+a kvalitou ortogonality matice Q získané pomocí QR rozkladu.
+
+U matic B a C, které mají relativně nízké číslo podmíněnosti (κ ≈ 52, resp. κ ≈ 3),
+byla dosažena velmi dobrá ortogonalita matice Q,
+přičemž hodnota normy ‖QᵀQ − I‖ se pohybovala na úrovni strojové přesnosti (řádově 10⁻¹⁵).
+To potvrzuje, že u dobře podmíněných matic je Gram–Schmidtův proces
+schopen produkovat numericky kvalitní ortogonální bázi.
+
+Naopak u matic A a D, které mají vysoké číslo podmíněnosti
+(κ ≈ 1.8 × 10¹⁸, resp. κ ≈ 7.3 × 10³),
+došlo k výrazné ztrátě ortogonality, přičemž hodnota normy ‖QᵀQ − I‖
+dosahovala hodnot blízkých 9.
+
+Tyto výsledky ukazují silnou závislost kvality ortogonality na podmíněnosti vstupní matice.
+Potvrzují, že nízká hodnota ‖A − QR‖ sama o sobě nezaručuje dobrou ortogonalitu matice Q.
+
+
+V rámci provedených experimentů nebyl prokázán rozdíl mezi klasickým a modifikovaným Gram–Schmidtovým algoritmem,
+protože oba algoritmy vedly ke stejným numerickým výsledkům. Výsledky však jednoznačně ukazují,
+že s rostoucím číslem podmíněnosti matice dochází k výraznému zhoršení ortogonality,
+což odpovídá známým teoretickým poznatkům z numerické lineární algebry.
+
+
